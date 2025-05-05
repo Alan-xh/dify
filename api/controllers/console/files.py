@@ -32,7 +32,7 @@ class FileApi(Resource):
     @setup_required
     @login_required
     @account_initialization_required
-    @marshal_with(upload_config_fields)
+    @marshal_with(upload_config_fields)  # 返回结果表单序列化
     def get(self):
         return {
             "file_size_limit": dify_config.UPLOAD_FILE_SIZE_LIMIT,
@@ -51,7 +51,9 @@ class FileApi(Resource):
     def post(self):
         file = request.files["file"]
         source_str = request.form.get("source")
-        source: Literal["datasets"] | None = "datasets" if source_str == "datasets" else None
+        source: Literal["datasets"] | None = (
+            "datasets" if source_str == "datasets" else None
+        )
 
         if "file" not in request.files:
             raise NoFileUploadedError()

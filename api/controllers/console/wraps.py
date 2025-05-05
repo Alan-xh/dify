@@ -1,3 +1,14 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+'''
+@File    :   wraps.py
+@Time    :   2025/04/22 00:11:20
+@Author  :   Alan_xh
+@Version :   1.0
+@Desc    :   console 接口组依赖注入
+'''
+
+
 import json
 import os
 import time
@@ -19,6 +30,8 @@ from .error import NotInitValidateError, NotSetupError, UnauthorizedAndForceLogo
 
 
 def account_initialization_required(view):
+    '''用户账号初始化'''
+
     @wraps(view)
     def decorated(*args, **kwargs):
         # check account initialization
@@ -33,10 +46,12 @@ def account_initialization_required(view):
 
 
 def only_edition_cloud(view):
+    '''限定云编辑'''
+
     @wraps(view)
     def decorated(*args, **kwargs):
         if dify_config.EDITION != "CLOUD":
-            abort(404)
+            abort(404)  # 抛出异常
 
         return view(*args, **kwargs)
 
@@ -44,6 +59,8 @@ def only_edition_cloud(view):
 
 
 def only_edition_self_hosted(view):
+    '''限定本机访问'''
+
     @wraps(view)
     def decorated(*args, **kwargs):
         if dify_config.EDITION != "SELF_HOSTED":
@@ -77,25 +94,50 @@ def cloud_edition_billing_resource_check(resource: str):
                 documents_upload_quota = features.documents_upload_quota
                 annotation_quota_limit = features.annotation_quota_limit
                 if resource == "members" and 0 < members.limit <= members.size:
-                    abort(403, "The number of members has reached the limit of your subscription.")
-                elif resource == "apps" and 0 < apps.limit <= apps.size:
-                    abort(403, "The number of apps has reached the limit of your subscription.")
-                elif resource == "vector_space" and 0 < vector_space.limit <= vector_space.size:
                     abort(
-                        403, "The capacity of the knowledge storage space has reached the limit of your subscription."
+                        403,
+                        "The number of members has reached the limit of your subscription.",
                     )
-                elif resource == "documents" and 0 < documents_upload_quota.limit <= documents_upload_quota.size:
+                elif resource == "apps" and 0 < apps.limit <= apps.size:
+                    abort(
+                        403,
+                        "The number of apps has reached the limit of your subscription.",
+                    )
+                elif (
+                    resource == "vector_space"
+                    and 0 < vector_space.limit <= vector_space.size
+                ):
+                    abort(
+                        403,
+                        "The capacity of the knowledge storage space has reached the limit of your subscription.",
+                    )
+                elif (
+                    resource == "documents"
+                    and 0 < documents_upload_quota.limit <= documents_upload_quota.size
+                ):
                     # The api of file upload is used in the multiple places,
                     # so we need to check the source of the request from datasets
                     source = request.args.get("source")
                     if source == "datasets":
-                        abort(403, "The number of documents has reached the limit of your subscription.")
+                        abort(
+                            403,
+                            "The number of documents has reached the limit of your subscription.",
+                        )
                     else:
                         return view(*args, **kwargs)
                 elif resource == "workspace_custom" and not features.can_replace_logo:
-                    abort(403, "The workspace custom feature has reached the limit of your subscription.")
-                elif resource == "annotation" and 0 < annotation_quota_limit.limit < annotation_quota_limit.size:
-                    abort(403, "The annotation quota has reached the limit of your subscription.")
+                    abort(
+                        403,
+                        "The workspace custom feature has reached the limit of your subscription.",
+                    )
+                elif (
+                    resource == "annotation"
+                    and 0 < annotation_quota_limit.limit < annotation_quota_limit.size
+                ):
+                    abort(
+                        403,
+                        "The annotation quota has reached the limit of your subscription.",
+                    )
                 else:
                     return view(*args, **kwargs)
 
@@ -133,7 +175,9 @@ def cloud_edition_billing_rate_limit_check(resource: str):
         @wraps(view)
         def decorated(*args, **kwargs):
             if resource == "knowledge":
-                knowledge_rate_limit = FeatureService.get_knowledge_rate_limit(current_user.current_tenant_id)
+                knowledge_rate_limit = FeatureService.get_knowledge_rate_limit(
+                    current_user.current_tenant_id
+                )
                 if knowledge_rate_limit.enabled:
                     current_time = int(time.time() * 1000)
                     key = f"rate_limit_{current_user.current_tenant_id}"
@@ -154,7 +198,8 @@ def cloud_edition_billing_rate_limit_check(resource: str):
                         db.session.add(rate_limit_log)
                         db.session.commit()
                         abort(
-                            403, "Sorry, you have reached the knowledge base request rate limit of your subscription."
+                            403,
+                            "Sorry, you have reached the knowledge base request rate limit of your subscription.",
                         )
             return view(*args, **kwargs)
 
@@ -174,7 +219,9 @@ def cloud_utm_record(view):
 
                 if utm_info:
                     utm_info_dict: dict = json.loads(utm_info)
-                    OperationService.record_utm(current_user.current_tenant_id, utm_info_dict)
+                    OperationService.record_utm(
+                        current_user.current_tenant_id, utm_info_dict
+                    )
         except Exception as e:
             pass
         return view(*args, **kwargs)
@@ -192,7 +239,10 @@ def setup_required(view):
             and not db.session.query(DifySetup).first()
         ):
             raise NotInitValidateError()
-        elif dify_config.EDITION == "SELF_HOSTED" and not db.session.query(DifySetup).first():
+        elif (
+            dify_config.EDITION == "SELF_HOSTED"
+            and not db.session.query(DifySetup).first()
+        ):
             raise NotSetupError()
 
         return view(*args, **kwargs)
@@ -204,8 +254,14 @@ def enterprise_license_required(view):
     @wraps(view)
     def decorated(*args, **kwargs):
         settings = FeatureService.get_system_features()
-        if settings.license.status in [LicenseStatus.INACTIVE, LicenseStatus.EXPIRED, LicenseStatus.LOST]:
-            raise UnauthorizedAndForceLogout("Your license is invalid. Please contact your administrator.")
+        if settings.license.status in [
+            LicenseStatus.INACTIVE,
+            LicenseStatus.EXPIRED,
+            LicenseStatus.LOST,
+        ]:
+            raise UnauthorizedAndForceLogout(
+                "Your license is invalid. Please contact your administrator."
+            )
 
         return view(*args, **kwargs)
 

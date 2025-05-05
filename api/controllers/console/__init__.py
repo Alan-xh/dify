@@ -1,8 +1,23 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+'''
+@File    :   __init__.py
+@Time    :   2025/04/22 00:02:29
+@Author  :   Alan_xh
+@Version :   1.0
+@Desc    :   控制台调度
+'''
+
+
 from flask import Blueprint
 
 from libs.external_api import ExternalApi
 
-from .app.app_import import AppImportApi, AppImportCheckDependenciesApi, AppImportConfirmApi
+from .app.app_import import (
+    AppImportApi,
+    AppImportCheckDependenciesApi,
+    AppImportConfirmApi,
+)
 from .explore.audio import ChatAudioApi, ChatTextApi
 from .explore.completion import ChatApi, ChatStopApi, CompletionApi, CompletionStopApi
 from .explore.conversation import (
@@ -25,22 +40,25 @@ from .explore.workflow import (
 from .files import FileApi, FilePreviewApi, FileSupportTypeApi
 from .remote_files import RemoteFileInfoApi, RemoteFileUploadApi
 
+''' console 蓝图'''
 bp = Blueprint("console", __name__, url_prefix="/console/api")
 api = ExternalApi(bp)
 
 # File
-api.add_resource(FileApi, "/files/upload")
-api.add_resource(FilePreviewApi, "/files/<uuid:file_id>/preview")
-api.add_resource(FileSupportTypeApi, "/files/support-type")
+api.add_resource(FileApi, "/files/upload")  # 文件接口类
+api.add_resource(FilePreviewApi, "/files/<uuid:file_id>/preview")  # 文件预览接口类
+api.add_resource(FileSupportTypeApi, "/files/support-type")  # 文件支持类型借口类注册
 
 # Remote files
-api.add_resource(RemoteFileInfoApi, "/remote-files/<path:url>")
-api.add_resource(RemoteFileUploadApi, "/remote-files/upload")
+api.add_resource(RemoteFileInfoApi, "/remote-files/<path:url>")  # 远程文件借口
+api.add_resource(RemoteFileUploadApi, "/remote-files/upload")  # 远程文件上传借口
 
 # Import App
-api.add_resource(AppImportApi, "/apps/imports")
-api.add_resource(AppImportConfirmApi, "/apps/imports/<string:import_id>/confirm")
-api.add_resource(AppImportCheckDependenciesApi, "/apps/imports/<string:app_id>/check-dependencies")
+api.add_resource(AppImportApi, "/apps/imports")  #
+api.add_resource(AppImportConfirmApi, "/apps/imports/<string:import_id>/confirm")  #
+api.add_resource(
+    AppImportCheckDependenciesApi, "/apps/imports/<string:app_id>/check-dependencies"
+)  #
 
 # Import other controllers
 from . import admin, apikey, extension, feature, ping, setup, version
@@ -68,7 +86,14 @@ from .app import (
 )
 
 # Import auth controllers
-from .auth import activate, data_source_bearer_auth, data_source_oauth, forgot_password, login, oauth
+from .auth import (
+    activate,
+    data_source_bearer_auth,
+    data_source_oauth,
+    forgot_password,
+    login,
+    oauth,
+)
 
 # Import billing controllers
 from .billing import billing, compliance
@@ -94,12 +119,22 @@ from .explore import (
 )
 
 # Explore Audio
-api.add_resource(ChatAudioApi, "/installed-apps/<uuid:installed_app_id>/audio-to-text", endpoint="installed_app_audio")
-api.add_resource(ChatTextApi, "/installed-apps/<uuid:installed_app_id>/text-to-audio", endpoint="installed_app_text")
+api.add_resource(
+    ChatAudioApi,
+    "/installed-apps/<uuid:installed_app_id>/audio-to-text",
+    endpoint="installed_app_audio",
+)
+api.add_resource(
+    ChatTextApi,
+    "/installed-apps/<uuid:installed_app_id>/text-to-audio",
+    endpoint="installed_app_text",
+)
 
 # Explore Completion
 api.add_resource(
-    CompletionApi, "/installed-apps/<uuid:installed_app_id>/completion-messages", endpoint="installed_app_completion"
+    CompletionApi,
+    "/installed-apps/<uuid:installed_app_id>/completion-messages",
+    endpoint="installed_app_completion",
 )
 api.add_resource(
     CompletionStopApi,
@@ -107,7 +142,9 @@ api.add_resource(
     endpoint="installed_app_stop_completion",
 )
 api.add_resource(
-    ChatApi, "/installed-apps/<uuid:installed_app_id>/chat-messages", endpoint="installed_app_chat_completion"
+    ChatApi,
+    "/installed-apps/<uuid:installed_app_id>/chat-messages",
+    endpoint="installed_app_chat_completion",
 )
 api.add_resource(
     ChatStopApi,
@@ -122,7 +159,9 @@ api.add_resource(
     endpoint="installed_app_conversation_rename",
 )
 api.add_resource(
-    ConversationListApi, "/installed-apps/<uuid:installed_app_id>/conversations", endpoint="installed_app_conversations"
+    ConversationListApi,
+    "/installed-apps/<uuid:installed_app_id>/conversations",
+    endpoint="installed_app_conversations",
 )
 api.add_resource(
     ConversationApi,
@@ -142,7 +181,11 @@ api.add_resource(
 
 
 # Explore Message
-api.add_resource(MessageListApi, "/installed-apps/<uuid:installed_app_id>/messages", endpoint="installed_app_messages")
+api.add_resource(
+    MessageListApi,
+    "/installed-apps/<uuid:installed_app_id>/messages",
+    endpoint="installed_app_messages",
+)
 api.add_resource(
     MessageFeedbackApi,
     "/installed-apps/<uuid:installed_app_id>/messages/<uuid:message_id>/feedbacks",
@@ -159,9 +202,12 @@ api.add_resource(
     endpoint="installed_app_suggested_question",
 )
 # Explore Workflow
-api.add_resource(InstalledAppWorkflowRunApi, "/installed-apps/<uuid:installed_app_id>/workflows/run")
 api.add_resource(
-    InstalledAppWorkflowTaskStopApi, "/installed-apps/<uuid:installed_app_id>/workflows/tasks/<string:task_id>/stop"
+    InstalledAppWorkflowRunApi, "/installed-apps/<uuid:installed_app_id>/workflows/run"
+)
+api.add_resource(
+    InstalledAppWorkflowTaskStopApi,
+    "/installed-apps/<uuid:installed_app_id>/workflows/tasks/<string:task_id>/stop",
 )
 
 # Import tag controllers

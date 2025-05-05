@@ -1,7 +1,8 @@
 from contextvars import ContextVar
 from typing import Generic, TypeVar
 
-T = TypeVar("T")
+# Generic 泛型类，使类可以支持类型变量，可以是各种类型
+T = TypeVar("T")  # 定义新的类型 类似 typedef
 
 
 class HiddenValue:
@@ -13,13 +14,13 @@ _default = HiddenValue()
 
 class RecyclableContextVar(Generic[T]):
     """
-    RecyclableContextVar is a wrapper around ContextVar
-    It's safe to use in gunicorn with thread recycling, but features like `reset` are not available for now
+    RecyclableContextVar 是 ContextVar 的包装器
+    在 Gunicorn 中，线程回收功能可以安全使用，但“重置”等功能目前不可用
 
     NOTE: you need to call `increment_thread_recycles` before requests
     """
 
-    _thread_recycles: ContextVar[int] = ContextVar("thread_recycles")
+    _thread_recycles: ContextVar[int] = ContextVar("thread_recycles")  # 异步变量
 
     @classmethod
     def increment_thread_recycles(cls):

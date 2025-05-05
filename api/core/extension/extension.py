@@ -12,7 +12,7 @@ class Extension:
 
     def init(self):
         for module, module_class in self.module_classes.items():
-            m = cast(Extensible, module_class)
+            m = cast(Extensible, module_class) # 告诉类型检查器 module_class 是 Extensible 类型,并返回 module_class
             self.__module_extensions[module.value] = m.scan_extensions()
 
     def module_extensions(self, module: str) -> list[ModuleExtension]:

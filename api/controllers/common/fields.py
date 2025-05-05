@@ -1,3 +1,14 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+'''
+@File    :   fields.py
+@Time    :   2025/04/21 23:45:55
+@Author  :   Alan_xh
+@Version :   1.0
+@Desc    :   注册各种 restful 字段类型
+'''
+
+
 from flask_restful import fields  # type: ignore
 
 parameters__system_parameters = {

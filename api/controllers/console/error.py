@@ -1,3 +1,14 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+'''
+@File    :   error.py
+@Time    :   2025/04/22 00:15:47
+@Author  :   Alan_xh
+@Version :   1.0
+@Desc    :   console错误
+'''
+
+
 from libs.exception import BaseHTTPException
 
 
@@ -36,7 +47,9 @@ class AccountNotLinkTenantError(BaseHTTPException):
 
 class AlreadyActivateError(BaseHTTPException):
     error_code = "already_activate"
-    description = "Auth Token is invalid or account already activated, please check again."
+    description = (
+        "Auth Token is invalid or account already activated, please check again."
+    )
     code = 403
 
 

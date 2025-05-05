@@ -5,6 +5,7 @@ from libs.external_api import ExternalApi
 from .files import FileApi
 from .remote_files import RemoteFileInfoApi, RemoteFileUploadApi
 
+# 构建蓝图实例
 bp = Blueprint("web", __name__, url_prefix="/api")
 api = ExternalApi(bp)
 
@@ -15,4 +16,15 @@ api.add_resource(FileApi, "/files/upload")
 api.add_resource(RemoteFileInfoApi, "/remote-files/<path:url>")
 api.add_resource(RemoteFileUploadApi, "/remote-files/upload")
 
-from . import app, audio, completion, conversation, feature, message, passport, saved_message, site, workflow
+from . import (
+    app,
+    audio,
+    completion,
+    conversation,
+    feature,
+    message,
+    passport,
+    saved_message,
+    site,
+    workflow,
+)

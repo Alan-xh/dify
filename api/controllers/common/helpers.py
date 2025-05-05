@@ -13,20 +13,29 @@ import httpx
 from constants import DEFAULT_FILE_NUMBER_LIMITS
 
 try:
+    '''识别 MIME 类型和文件类型'''
     import magic
 except ImportError:
     if platform.system() == "Windows":
         warnings.warn(
-            "To use python-magic guess MIMETYPE, you need to run `pip install python-magic-bin`", stacklevel=2
+            "To use python-magic guess MIMETYPE, you need to run `pip install python-magic-bin`",
+            stacklevel=2,
         )
     elif platform.system() == "Darwin":
-        warnings.warn("To use python-magic guess MIMETYPE, you need to run `brew install libmagic`", stacklevel=2)
+        warnings.warn(
+            "To use python-magic guess MIMETYPE, you need to run `brew install libmagic`",
+            stacklevel=2,
+        )
     elif platform.system() == "Linux":
         warnings.warn(
-            "To use python-magic guess MIMETYPE, you need to run `sudo apt-get install libmagic1`", stacklevel=2
+            "To use python-magic guess MIMETYPE, you need to run `sudo apt-get install libmagic1`",
+            stacklevel=2,
         )
     else:
-        warnings.warn("To use python-magic guess MIMETYPE, you need to install `libmagic`", stacklevel=2)
+        warnings.warn(
+            "To use python-magic guess MIMETYPE, you need to install `libmagic`",
+            stacklevel=2,
+        )
     magic = None  # type: ignore
 
 from pydantic import BaseModel
@@ -42,6 +51,7 @@ class FileInfo(BaseModel):
 
 
 def guess_file_info_from_response(response: httpx.Response):
+    '''解析 response的文件'''
     url = str(response.url)
     # Try to extract filename from URL
     parsed_url = urllib.parse.urlparse(url)
@@ -91,14 +101,21 @@ def guess_file_info_from_response(response: httpx.Response):
     )
 
 
-def get_parameters_from_feature_dict(*, features_dict: Mapping[str, Any], user_input_form: list[dict[str, Any]]):
+def get_parameters_from_feature_dict(
+    *, features_dict: Mapping[str, Any], user_input_form: list[dict[str, Any]]
+):
+    '''获取参数字典'''
     return {
         "opening_statement": features_dict.get("opening_statement"),
         "suggested_questions": features_dict.get("suggested_questions", []),
-        "suggested_questions_after_answer": features_dict.get("suggested_questions_after_answer", {"enabled": False}),
+        "suggested_questions_after_answer": features_dict.get(
+            "suggested_questions_after_answer", {"enabled": False}
+        ),
         "speech_to_text": features_dict.get("speech_to_text", {"enabled": False}),
         "text_to_speech": features_dict.get("text_to_speech", {"enabled": False}),
-        "retriever_resource": features_dict.get("retriever_resource", {"enabled": False}),
+        "retriever_resource": features_dict.get(
+            "retriever_resource", {"enabled": False}
+        ),
         "annotation_reply": features_dict.get("annotation_reply", {"enabled": False}),
         "more_like_this": features_dict.get("more_like_this", {"enabled": False}),
         "user_input_form": user_input_form,

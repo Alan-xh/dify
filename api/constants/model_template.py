@@ -1,8 +1,9 @@
 import json
-from collections.abc import Mapping
+from collections.abc import Mapping  # 字典的抽象父类
 
 from models.model import AppMode
 
+''' 不同模式的配置 '''
 default_app_templates: Mapping[AppMode, Mapping] = {
     # workflow default mode
     AppMode.WORKFLOW: {
